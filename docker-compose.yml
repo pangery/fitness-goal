@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      CORS_ORIGIN: "*"
+      DATA_FILE: /app/data/fitness-goal.json
+    volumes:
+      - fitness_data:/app/data
+
+volumes:
+  fitness_data:
