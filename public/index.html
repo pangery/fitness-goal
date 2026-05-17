@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitPulse — Fitness cíle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/css/animations.css" />
+    <link rel="stylesheet" href="/css/pro.css" />
+  </head>
+  <body>
+    <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__logo" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="10" fill="url(#logoGrad)" />
+            <path
+              d="M9 21l5-10 5 6 4-8"
+              stroke="#fff"
+              stroke-width="2.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                <stop stop-color="#0d9488" />
+                <stop offset="1" stop-color="#0f766e" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <div>
+          <span class="topbar__name">FitPulse</span>
+          <span class="topbar__crumb">Správa fitness cílů</span>
+        </div>
+      </div>
+      <button type="button" class="btn btn--primary" id="btnNewGoal">
+        <svg class="btn__svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Nový cíl
+      </button>
+    </header>
+
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="sidebar__head">
+          <h2 class="sidebar__title">Fitness cíle</h2>
+          <span class="badge" id="goalCount">0</span>
+        </div>
+
+        <div class="search-wrap">
+          <svg class="search-wrap__icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" fill="none" stroke-width="1.5" />
+            <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <input
+            type="search"
+            id="goalSearch"
+            class="input input--search"
+            placeholder="Hledat cíl…"
+            autocomplete="off"
+          />
+        </div>
+
+        <ul class="goal-list" id="goalList" role="listbox" aria-label="Seznam fitness cílů"></ul>
+      </aside>
+
+      <main class="detail" id="detailPanel">
+        <div class="detail__empty" id="emptyState">
+          <div class="empty-card">
+            <div class="empty-card__icon" aria-hidden="true">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2" opacity="0.2" />
+                <path
+                  d="M16 30l6-12 6 7 4-8"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <p class="empty-card__title">Začněte výběrem cíle</p>
+            <p class="empty-card__text">
+              V levém panelu zvolte fitness cíl, nebo vytvořte nový a začněte evidovat tréninky v přehledném dashboardu.
+            </p>
+            <button type="button" class="btn btn--primary" id="btnEmptyNewGoal">Vytvořit první cíl</button>
+          </div>
+        </div>
+
+        <article class="detail__content" id="goalDetail" hidden>
+          <div class="detail__loading" id="detailLoading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Načítám…</span>
+          </div>
+
+          <div class="detail__inner" id="detailInner">
+            <header class="detail__header">
+              <nav class="breadcrumbs" id="breadcrumbs"></nav>
+              <div class="detail__actions">
+                <button type="button" class="btn btn--ghost" id="btnEditGoal">
+                  <svg class="btn__svg" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                    <path
+                      d="M10 2l2 2-7 7H3v-2l7-7z"
+                      stroke="currentColor"
+                      stroke-width="1.25"
+                      fill="none"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Upravit
+                </button>
+                <button type="button" class="btn btn--danger-ghost" id="btnDeleteGoal">
+                  <svg class="btn__svg" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                    <path
+                      d="M3 4h8M5.5 4V3h3v1M5 4v6.5h4V4"
+                      stroke="currentColor"
+                      stroke-width="1.25"
+                      fill="none"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Odstranit
+                </button>
+              </div>
+            </header>
+
+            <div class="hero-card">
+              <div class="hero-card__accent"></div>
+              <div class="hero-card__body">
+                <div class="avatar avatar--lg avatar--gradient" id="goalAvatar"></div>
+                <div class="hero-card__info">
+                  <div class="detail__title-row">
+                    <h1 class="detail__title" id="goalTitle"></h1>
+                    <span class="pill">Aktivní cíl</span>
+                  </div>
+                  <dl class="meta-row">
+                    <div>
+                      <dt>Typ</dt>
+                      <dd>Fitness cíl</dd>
+                    </div>
+                    <div>
+                      <dt>ID</dt>
+                      <dd><code class="id-chip" id="goalIdShort"></code></dd>
+                    </div>
+                    <div>
+                      <dt>Poslední aktivita</dt>
+                      <dd id="goalLastActivity">—</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-reveal" id="detailReveal">
+              <div class="detail-reveal__cue" id="detailRevealCue">
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 3v8M3 7.5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Posuňte dolů pro detail
+                </span>
+              </div>
+
+              <div class="detail-reveal__layer" id="detailRevealLayer">
+            <div class="stats-grid" id="statsGrid">
+              <div class="stat-card stat-card--teal">
+                <div class="stat-card__top">
+                  <span class="stat-card__label">Cvičení</span>
+                  <div class="stat-card__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <rect x="3" y="8" width="3" height="9" rx="1" fill="currentColor" />
+                      <rect x="8.5" y="5" width="3" height="12" rx="1" fill="currentColor" />
+                      <rect x="14" y="2" width="3" height="15" rx="1" fill="currentColor" />
+                    </svg>
+                  </div>
+                </div>
+                <span class="stat-card__value" id="statExercises" data-animate="0">0</span>
+              </div>
+              <div class="stat-card stat-card--violet">
+                <div class="stat-card__top">
+                  <span class="stat-card__label">Celkem opakování</span>
+                  <div class="stat-card__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path
+                        d="M4 10a6 6 0 1112 0"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                      />
+                      <path d="M10 10V4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                </div>
+                <span class="stat-card__value" id="statReps" data-animate="0">0</span>
+              </div>
+              <div class="stat-card stat-card--amber">
+                <div class="stat-card__top">
+                  <span class="stat-card__label">Doba tréninku</span>
+                  <div class="stat-card__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.75" />
+                      <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                </div>
+                <span class="stat-card__value" id="statDuration">0 min</span>
+              </div>
+            </div>
+
+            <section class="section section--exercises" id="exerciseSection">
+              <div class="section__head">
+                <h2 class="section__title">Cvičení<span class="section__count" id="exerciseCount"></span></h2>
+                <button type="button" class="btn btn--primary btn--sm" id="btnAddExercise">
+                  <svg class="btn__svg" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                    <path d="M7 3v8M3 7h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                  Přidat cvičení
+                </button>
+              </div>
+
+              <div class="exercise-panel" id="exercisePanel">
+                <div class="exercise-panel__toolbar" id="exerciseToolbar" hidden>
+                  <span>Evidence cvičení</span>
+                  <span id="exerciseToolbarCount">0 záznamů</span>
+                </div>
+                <ul class="exercise-cards" id="exerciseCards" hidden></ul>
+                <div class="empty-inline empty-inline--action" id="exerciseEmpty" hidden>
+                  <div class="empty-inline__icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 18l4-8 4 5 4-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <p>Zatím žádná cvičení. Přidejte první záznam a sledujte svůj pokrok.</p>
+                  <button type="button" class="btn btn--primary btn--sm" id="btnEmptyAddExercise">
+                    Přidat cvičení
+                  </button>
+                </div>
+              </div>
+            </section>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+    </div>
+
+    <dialog class="modal" id="goalModal">
+      <form method="dialog" class="modal__box" id="goalForm">
+        <div class="modal__header">
+          <h3 class="modal__title" id="goalModalTitle">Nový fitness cíl</h3>
+          <p class="modal__subtitle">Pojmenujte cíl, ke kterému budete zapisovat tréninky</p>
+        </div>
+        <label class="field">
+          <span class="field__label">Název cíle</span>
+          <input type="text" name="name" class="input" required maxlength="120" placeholder="např. Hubnutí, Síla…" />
+        </label>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-action="cancel">Zrušit</button>
+          <button type="submit" class="btn btn--primary" data-submit>Uložit</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="exerciseModal">
+      <form method="dialog" class="modal__box modal__box--wide" id="exerciseForm">
+        <div class="modal__header">
+          <h3 class="modal__title" id="exerciseModalTitle">Nové cvičení</h3>
+          <p class="modal__subtitle">Zaznamenejte série, opakování a datum tréninku</p>
+        </div>
+        <div class="form-grid">
+          <label class="field field--full">
+            <span class="field__label">Název cvičení</span>
+            <input type="text" name="name" class="input" required maxlength="120" placeholder="např. Bench press" />
+          </label>
+          <label class="field">
+            <span class="field__label">Série</span>
+            <input type="number" name="sets" class="input" min="1" value="3" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Opakování</span>
+            <input type="number" name="repetitions" class="input" min="1" value="10" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Datum a čas</span>
+            <input type="datetime-local" name="date" class="input" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Délka (min)</span>
+            <input type="number" name="durationMinutes" class="input" min="1" max="1440" placeholder="volitelné" />
+          </label>
+          <label class="field field--full">
+            <span class="field__label">Poznámka</span>
+            <textarea name="note" class="input input--area" rows="2" maxlength="500" placeholder="volitelné"></textarea>
+          </label>
+        </div>
+        <p class="volume-hint" id="volumeHint">Objem: 3 × 10 = <strong>30</strong> opakování</p>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-action="cancel">Zrušit</button>
+          <button type="submit" class="btn btn--primary" data-submit>Uložit</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal modal--confirm" id="confirmModal">
+      <div class="modal__box modal__box--confirm">
+        <div class="modal__header">
+          <h3 class="modal__title" id="confirmTitle">Potvrdit akci</h3>
+        </div>
+        <p class="confirm__text" id="confirmText"></p>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" id="confirmCancel">Zrušit</button>
+          <button type="button" class="btn btn--danger" id="confirmOk">Odstranit</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

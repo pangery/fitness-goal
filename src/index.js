@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 import { config } from "./config.js";
 import { loadStores, persistNow } from "./persistence/filePersistence.js";
 import { fitnessGoalRouter } from "./routes/fitnessGoal.js";
@@ -12,11 +14,14 @@ import { createCorsMiddleware } from "./middleware/cors.js";
 import { seedDemoData } from "./seed.js";
 
 const { port, gatewayPrefix: BASE } = config;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const publicDir = join(__dirname, "..", "public");
 
 const app = express();
 app.use(createCorsMiddleware());
 app.use(requestLogger);
 app.use(express.json());
+app.use(express.static(publicDir));
 
 app.use(`${BASE}/fitnessGoal`, fitnessGoalRouter);
 app.use(`${BASE}/exercise`, exerciseRouter);
@@ -45,6 +50,10 @@ app.get(`${BASE}/health`, (req, res) => {
       stats: ["GET /stats/overview — volitelně ?year=&month="],
     },
   });
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(join(publicDir, "index.html"));
 });
 
 app.use(notFoundHandler);

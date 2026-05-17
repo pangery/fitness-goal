@@ -11,6 +11,8 @@ cp .env.example .env   # volitelné
 npm start
 ```
 
+Po startu otevřete v prohlížeči **http://localhost:3000** — webové rozhraní **FitPulse** (správa cílů a cvičení).
+
 - **`npm run dev`** — watch režim (`node --watch`)
 - **`npm test`** — jednoduché testy (`node --test`)
 

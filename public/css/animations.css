@@ -1,0 +1,216 @@
+/* FitPulse — motion (optimalizováno pro plynulost) */
+
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --anim-dur: 0.42s;
+}
+
+/* Jednorázový vstup aplikace */
+.app-ready .topbar {
+  animation: slideDown var(--anim-dur) var(--ease-out) backwards;
+}
+
+.app-ready .sidebar {
+  animation: slideRight var(--anim-dur) var(--ease-out) 0.06s backwards;
+}
+
+.app-ready .detail {
+  animation: fadeIn var(--anim-dur) var(--ease-out) 0.1s backwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Seznam cílů — jen při prvním vykreslení */
+.goal-list--animate .goal-item {
+  animation: goalIn 0.38s var(--ease-out) backwards;
+}
+
+@keyframes goalIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+.goal-item--pulse {
+  animation: pulseRing 0.5s var(--ease-out);
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 1px var(--accent), var(--shadow-sm);
+  }
+}
+
+.badge--pop {
+  animation: badgePop 0.4s var(--ease-out);
+}
+
+@keyframes badgePop {
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Detail — jedna koordinovaná animace přes rodiče */
+.detail-inner--animate .hero-card {
+  animation: blockIn 0.48s var(--ease-out) backwards;
+}
+
+.detail-inner--animate .stat-card {
+  animation: blockIn 0.45s var(--ease-out) backwards;
+}
+
+.detail-inner--animate .stat-card:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.detail-inner--animate .stat-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.detail-inner--animate .stat-card:nth-child(3) {
+  animation-delay: 0.18s;
+}
+
+.detail-inner--animate .section--exercises {
+  animation: blockIn 0.45s var(--ease-out) 0.22s backwards;
+}
+
+.detail-inner--animate .exercise-card {
+  animation: cardIn 0.38s var(--ease-out) backwards;
+}
+
+.detail-inner--animate .empty-inline--action {
+  animation: blockIn 0.45s var(--ease-out) 0.25s backwards;
+}
+
+@keyframes blockIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Přepnutí cíle — krátký crossfade */
+.detail__content.is-fading .detail__inner {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out);
+}
+
+.detail__inner {
+  transition:
+    opacity 0.28s var(--ease-out),
+    transform 0.28s var(--ease-out);
+}
+
+/* Toast & modal */
+.toast.is-visible {
+  animation: toastIn 0.38s var(--ease-out);
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px);
+  }
+}
+
+.modal[open] .modal__box {
+  animation: modalIn 0.38s var(--ease-out);
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(10px);
+  }
+}
+
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.btn--primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn--primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.topbar--scrolled {
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-ready .topbar,
+  .app-ready .sidebar,
+  .app-ready .detail,
+  .goal-list--animate .goal-item,
+  .detail-inner--animate .hero-card,
+  .detail-inner--animate .stat-card,
+  .detail-inner--animate .section--exercises,
+  .detail-inner--animate .exercise-card,
+  .detail-inner--animate .empty-inline--action,
+  .toast.is-visible,
+  .modal[open] .modal__box,
+  .goal-item--pulse,
+  .badge--pop {
+    animation: none !important;
+  }
+
+  .detail__content.is-fading .detail__inner,
+  .detail__inner {
+    transition: none !important;
+  }
+
+  .btn--primary::after {
+    display: none;
+  }
+}
